@@ -1,27 +1,20 @@
 package menjacnica.gui;
 
-import java.awt.BorderLayout;
-import java.awt.EventQueue;
-
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
-
 import java.awt.GridLayout;
-
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.JButton;
 import javax.swing.SwingConstants;
 import javax.swing.JCheckBox;
-
 import menjacnica.Valuta;
-
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.Toolkit;
 
+@SuppressWarnings("serial")
 public class ObrisiKursGUI extends JFrame {
 
 	private JPanel contentPane;
@@ -41,7 +34,7 @@ public class ObrisiKursGUI extends JFrame {
 	private JButton btnOdus;
 	private JCheckBox chckbxZaistaObrisiKurs;
 	private JLabel label;
-	
+	private ObrisiKursGUI obrisiKursGUI;
 	private MenjacnicaGUI glavniProzor;
 	private Valuta valuta;
 
@@ -78,7 +71,7 @@ public class ObrisiKursGUI extends JFrame {
 		//podesavanje
 		this.glavniProzor = glavniProzor;
 		this.valuta = valuta;
-		
+		obrisiKursGUI = this;
 		prikaziValutu();
 	}
 
@@ -177,7 +170,7 @@ public class ObrisiKursGUI extends JFrame {
 			btnDodaj = new JButton("Obrisi");
 			btnDodaj.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					obrisiValutu();
+					GUIKontroler.obrisiValutu(obrisiKursGUI, contentPane, glavniProzor, valuta);
 				}
 			});
 			btnDodaj.setEnabled(false);
@@ -226,15 +219,4 @@ public class ObrisiKursGUI extends JFrame {
 		textFieldSrednjiKurs.setText(""+valuta.getSrednji());				
 	}
 
-	private void obrisiValutu() {
-		try{
-			glavniProzor.sistem.obrisiValutu(valuta);
-			
-			glavniProzor.prikaziSveValute();
-			dispose();
-		} catch (Exception e1) {
-			JOptionPane.showMessageDialog(contentPane, e1.getMessage(),
-					"Greska", JOptionPane.ERROR_MESSAGE);
-		}
-	}
 }
