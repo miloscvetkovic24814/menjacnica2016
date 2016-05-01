@@ -3,14 +3,18 @@ import java.awt.BorderLayout;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import menjacnica.gui.models.MenjacnicaTableModel;
 import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import java.awt.Toolkit;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 import java.awt.event.KeyEvent;
 import java.awt.event.InputEvent;
@@ -21,6 +25,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
 
 @SuppressWarnings("serial")
 public class MenjacnicaGUI extends JFrame {
@@ -38,7 +43,7 @@ public class MenjacnicaGUI extends JFrame {
 	private JMenuItem mntmSave;
 	private JMenuItem mntmExit;
 	private JMenuItem mntmAbout;
-	private MenjacnicaGUI menjacnicaGUI;
+	private JTable table;
 	
 	/**
 	 * Create the frame.
@@ -47,7 +52,7 @@ public class MenjacnicaGUI extends JFrame {
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
-				GUIKontroler.ugasiAplikaciju(contentPane);
+				GUIKontroler.ugasiAplikaciju();
 			}
 		});
 		setIconImage(Toolkit.getDefaultToolkit().getImage(MenjacnicaGUI.class.getResource("/icons/Screenshot.png")));
@@ -61,16 +66,13 @@ public class MenjacnicaGUI extends JFrame {
 		setContentPane(contentPane);
 		contentPane.add(getScrollPane(), BorderLayout.CENTER);
 		contentPane.add(getPanel(), BorderLayout.EAST);
-		menjacnicaGUI = this;
+		table = getTable();
 	}
 
-	private JScrollPane getScrollPane() {
-		return GUIKontroler.getScrollPane(scrollPane);
-	}
-	@SuppressWarnings("unused")
 	private JPanel getPanel() {
 		if (panel == null) {
 			panel = new JPanel();
+			@SuppressWarnings("unused")
 			FlowLayout flowLayout = (FlowLayout) panel.getLayout();
 			panel.setPreferredSize(new Dimension(160, 10));
 			panel.add(getBtnNewButton());
@@ -84,7 +86,7 @@ public class MenjacnicaGUI extends JFrame {
 			btnNewButton = new JButton("Dodaj kurs");
 			btnNewButton.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					GUIKontroler.prikaziDodajKursGUI(contentPane, menjacnicaGUI);
+					GUIKontroler.prikaziDodajKursGUI();
 				}
 			});
 			btnNewButton.setPreferredSize(new Dimension(140, 25));
@@ -96,7 +98,7 @@ public class MenjacnicaGUI extends JFrame {
 			btnObrisiKurs = new JButton("Obrisi kurs");
 			btnObrisiKurs.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					GUIKontroler.prikaziObrisiKursGUI(contentPane, menjacnicaGUI);
+					prikaziObrisiKursGUI();
 				}
 			});
 			btnObrisiKurs.setPreferredSize(new Dimension(140, 25));
@@ -108,7 +110,7 @@ public class MenjacnicaGUI extends JFrame {
 			btnIzvrsiZamenu = new JButton("Izvrsi zamenu");
 			btnIzvrsiZamenu.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					GUIKontroler.prikaziIzvrsiZamenuGUI(contentPane, menjacnicaGUI);
+					prikaziIzvrsiZamenuGUI();
 				}
 			});
 			btnIzvrsiZamenu.setPreferredSize(new Dimension(140, 25));
@@ -145,7 +147,7 @@ public class MenjacnicaGUI extends JFrame {
 			mntmNew = new JMenuItem("Open");
 			mntmNew.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					GUIKontroler.ucitajIzFajla(contentPane);
+					ucitajIzFajla();
 				}
 			});
 			mntmNew.setIcon(new ImageIcon(MenjacnicaGUI.class.getResource("/com/sun/java/swing/plaf/windows/icons/Directory.gif")));
@@ -158,7 +160,7 @@ public class MenjacnicaGUI extends JFrame {
 			mntmSave = new JMenuItem("Save");
 			mntmSave.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					GUIKontroler.sacuvajUFajl(contentPane);
+					sacuvajUFajl();
 				}
 			});mntmSave.setIcon(new ImageIcon(MenjacnicaGUI.class.getResource("/com/sun/java/swing/plaf/windows/icons/FloppyDrive.gif")));
 			mntmSave.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_MASK));
@@ -170,7 +172,7 @@ public class MenjacnicaGUI extends JFrame {
 			mntmExit = new JMenuItem("Exit");
 			mntmExit.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					GUIKontroler.ugasiAplikaciju(contentPane);
+					GUIKontroler.ugasiAplikaciju();
 				}
 			});
 			mntmExit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, InputEvent.ALT_MASK));
@@ -182,7 +184,7 @@ public class MenjacnicaGUI extends JFrame {
 			mntmAbout = new JMenuItem("About");
 			mntmAbout.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					GUIKontroler.prikaziAboutProzor(contentPane);
+					GUIKontroler.prikaziAboutProzor();
 				}
 			});
 		}
@@ -192,5 +194,72 @@ public class MenjacnicaGUI extends JFrame {
 	@SuppressWarnings("unused")
 	private static void addPopup(Component component, final JPopupMenu popup) {
 	}
+	
+	private JTable getTable() {
+		if (table == null) {
+			table = new JTable();
+			table.setModel(new MenjacnicaTableModel());
+		}
+		return table;
+	}
+	
+	private JScrollPane getScrollPane(){
+		if (scrollPane == null) {
+			scrollPane = new JScrollPane();
+			scrollPane.setViewportView(getTable());
+		}
+		return scrollPane;
+	}
+	
+	private void prikaziObrisiKursGUI() {
+		if (table.getSelectedRow() != -1) {
+			MenjacnicaTableModel model = (MenjacnicaTableModel)(table.getModel());
+			GUIKontroler.prikaziObrisiKursGUI(model.vratiValutu(table.getSelectedRow()));
+		}
+	}
+	
+	private void prikaziIzvrsiZamenuGUI() {
+		if (table.getSelectedRow() != -1) {
+			MenjacnicaTableModel model = (MenjacnicaTableModel)(table.getModel());
+			GUIKontroler.prikaziIzvrsiZamenuGUI(model.vratiValutu(getTable().getSelectedRow()));
+		}
+	}
+	
+	protected void prikaziSveValute() {
+		MenjacnicaTableModel model = (MenjacnicaTableModel)(table.getModel());
+		model.staviSveValuteUModel(GUIKontroler.vratiKursnuListu());
+	}
+	
+	private void ucitajIzFajla() {
+		try {
+			JFileChooser fc = new JFileChooser();
+			int returnVal = fc.showOpenDialog(contentPane);
+
+			if (returnVal == JFileChooser.APPROVE_OPTION) {
+				File file = fc.getSelectedFile();
+				GUIKontroler.ucitajIzFajla(file.getAbsolutePath());
+				prikaziSveValute();
+			}	
+		} catch (Exception e1) {
+			JOptionPane.showMessageDialog(contentPane, e1.getMessage(),
+					"Greska", JOptionPane.ERROR_MESSAGE);
+		}		
+		
+	}
+	
+	private void sacuvajUFajl() {
+		try {
+			JFileChooser fc = new JFileChooser();
+			int returnVal = fc.showSaveDialog(contentPane);
+
+			if (returnVal == JFileChooser.APPROVE_OPTION) {
+				File file = fc.getSelectedFile();
+				GUIKontroler.sacuvajUFajl(file.getAbsolutePath());
+			}
+		} catch (Exception e1) {
+			JOptionPane.showMessageDialog(contentPane, e1.getMessage(),
+					"Greska", JOptionPane.ERROR_MESSAGE);
+		}
+	}	
 
 }
